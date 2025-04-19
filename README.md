@@ -1,2 +1,2 @@
 # histone-TSS-profile
-H1-Occupancy or peak signals profile around the TSS regions
+H1-Occupancy or peak signal profile around the TSS regions
