@@ -1,0 +1,11 @@
+results/gencode_tss_bed/group_0_tss.bed	0
+results/gencode_tss_bed/group_1_tss.bed	1
+results/gencode_tss_bed/group_2_tss.bed	2
+results/gencode_tss_bed/group_3_tss.bed	3
+results/gencode_tss_bed/group_4_tss.bed	4
+results/gencode_tss_bed/group_5_tss.bed	5
+results/gencode_tss_bed/group_6_tss.bed	6
+results/gencode_tss_bed/group_7_tss.bed	7
+results/gencode_tss_bed/group_8_tss.bed	8
+results/gencode_tss_bed/group_9_tss.bed	9
+results/gencode_tss_bed/group_10_tss.bed	10
