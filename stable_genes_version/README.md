@@ -141,3 +141,7 @@ Wrapper script for running the TSS BED file generation.
 - Expression values are expected to be in TPM (Transcripts Per Million) format
 - The scripts support both hg19 and hg38 genome versions
 - RefSeq matching is optional and can be enabled when needed
+
+## Contact
+
+For questions, improvement or issues, please contact: chhetribsurya@gmail.com
