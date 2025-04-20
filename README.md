@@ -89,33 +89,44 @@ histone-TSS-profile/
 
 ```bash
 # For RefSeq annotations
-./step1_run_refseq-tss-bed-generator.sh \
+python refseq-tss-bed-generator.py \
   --expr_dir ./data/T47D_ExpressionGroups_RNASeq \
   --output_dir refseq_tss_results \
   --genome hg19
 
 # For eRNA analysis
-./step1_run_erna-tss-bed-generator.sh \
+python gencode_tss_bed_generator_v2.py \
   --input ./data/enhancer_rna_files/ \
-  --output_dir eRNA_tss_results
+  --output_dir eRNA_tss_results \
+  --genome hg19 \
+  --gencode_version 37
+
+# For GENCODE annotations
+python gencode_tss_bed_generator_v2.py \
+  --expr_dir ./data/T47D_ExpressionGroups_RNASeq \
+  --output_dir gencode_tss_results \
+  --genome hg19 \
+  --gencode_version 37 \
+  --tss_selection canonical
 ```
 
 ### Step 2: Histone Distribution Analysis
 
 ```bash
-./step2_run_h1_tss_profile_v2.sh \
+python h1_tss_profile.py \
   --tss ./refseq_tss_results/refseq_tss_with_groups.bed \
   --input ./data/GSM5076926_H1.0_WT.wig \
   --window 3000 \
   --bin 10 \
   --processes 6 \
-  --groups "1,2,3,4"
+  --groups "1,2,3,4" \
+  --output_dir ./resultsFINAL/results_H1.0
 ```
 
 ### Step 3: Profile Smoothing
 
 ```bash
-./step3_run_smooth_tss_profiles.sh \
+python smooth_tss_profiles.py \
   --input ./resultsFINAL/results_H1.0/h1_tss_profile_profiles.csv \
   --output-dir ./resultsFINAL/results_H1.0/smoothing_comparison \
   --method savgol \
