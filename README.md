@@ -6,13 +6,13 @@ This repository contains a comprehensive pipeline for analyzing histone variant 
 
 ### Biological Context
 
-Histone variants play crucial roles in gene regulation and chromatin organization. Different histone variants, such as H1.0, H1.2, H1.3, H1.4, H1.5, and H1.X, have distinct distribution patterns around transcription start sites (TSS) and enhancer regions. Understanding these patterns provides insights into:
+Histone variants play crucial roles in gene regulation and chromatin organization. Different histone variants, such as H1.0, H1.2, H1.3, H1.4, H1.5, and H1.X, have distinct distribution patterns around transcription start sites (TSS) and enhancer regions. Understanding these patterns provides several insights into:
 - Gene regulation mechanisms
 - Chromatin structure and dynamics
 - Transcription factor binding
 - Enhancer-promoter interactions
 
-This pipeline enables systematic analysis of histone variant distribution patterns across different gene expression groups and enhancer regions, providing valuable insights into chromatin organization and gene regulation.
+This pipeline enables systematic analysis of histone variant distribution patterns across different gene expression groups and enhancer regions, providing insights into chromatin organization and gene regulation.
 
 ## Pipeline Overview
 
