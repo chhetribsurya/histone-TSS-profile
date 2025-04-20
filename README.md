@@ -234,13 +234,13 @@ python smooth_tss_profiles.py \
 
 ### Expression Group Definitions
 
-| Group | Description | Expression Range | Typical Usage |
-|-------|-------------|------------------|---------------|
-| 0 | No expression | < 1.0 | Usually excluded |
-| 1 | Low expression | 1.0 - 10.0 | Baseline group |
-| 2 | Medium expression | 10.0 - 100.0 | Intermediate group |
-| 3 | High expression | 100.0 - 1000.0 | Highly expressed |
-| 4 | Very high expression | > 1000.0 | Maximum expression |
+| Group | Description | Typical Usage |
+|-------|-------------|---------------|
+| 0 | No expression | Usually excluded |
+| 1 | Low expression | Baseline group |
+| 2 | Medium expression | Intermediate group |
+| 3 | High expression | Highly expressed |
+| 4 | Very high expression | Maximum expression |
 
 ### Smoothing Method Comparison
 
