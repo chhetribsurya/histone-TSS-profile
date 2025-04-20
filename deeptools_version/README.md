@@ -213,4 +213,4 @@ sbatch run_stable_genes.sh
 
 ## Contact
 
-For questions or issues, please contact: chhetribsurya@gmail.com
+For questions, improvement or issues, please contact: chhetribsurya@gmail.com
