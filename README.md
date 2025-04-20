@@ -300,4 +300,4 @@ This project is licensed under the terms specified in the LICENSE file.
 
 ## Contact
 
-For questions, improvements or issues, please contact: chhetribsurya@gmail.com
+For questions, improvements, or issues, please contact: chhetribsurya@gmail.com
