@@ -168,6 +168,8 @@ python smooth_tss_profiles.py \
    ./step1_run_refseq-tss-bed-generator.sh
    # or
    ./step1_run_erna-tss-bed-generator.sh
+   # or
+   ./step1_run_gencode_tss_bed_generator.sh
    ```
 
 2. **Analyze histone distribution**:
