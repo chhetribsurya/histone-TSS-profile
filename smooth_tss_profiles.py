@@ -13,14 +13,14 @@ Input CSV should have columns: 'Position', 'Group_1', 'Group_2', ..., 'Group_All
 import os
 import sys
 import argparse
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-from matplotlib.colors import LinearSegmentedColormap
-from scipy.signal import savgol_filter
-from scipy.ndimage import gaussian_filter1d
-import seaborn as sns
+import numpy as np # type: ignore
+import pandas as pd # type: ignore
+import matplotlib.pyplot as plt # type: ignore
+import matplotlib.gridspec as gridspec # type: ignore
+from matplotlib.colors import LinearSegmentedColormap # type: ignore
+from scipy.signal import savgol_filter # type: ignore
+from scipy.ndimage import gaussian_filter1d # type: ignore
+import seaborn as sns # type: ignore
 
 def parse_args():
     """Parse command line arguments"""
