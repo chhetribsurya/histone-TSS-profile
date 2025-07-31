@@ -13,14 +13,18 @@ Input CSV should have columns: 'Position', 'Group_1', 'Group_2', ..., 'Group_All
 import os
 import sys
 import argparse
-import numpy as np # type: ignore
-import pandas as pd # type: ignore
-import matplotlib.pyplot as plt # type: ignore
-import matplotlib.gridspec as gridspec # type: ignore
-from matplotlib.colors import LinearSegmentedColormap # type: ignore
-from scipy.signal import savgol_filter # type: ignore
-from scipy.ndimage import gaussian_filter1d # type: ignore
-import seaborn as sns # type: ignore
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+from matplotlib.colors import LinearSegmentedColormap
+from scipy.signal import savgol_filter
+from scipy.ndimage import gaussian_filter1d
+import seaborn as sns
+
+# Set matplotlib parameters
+# plt.rcParams['font.size'] = 10
+# plt.rcParams['figure.figsize'] = (5.6, 3.8)
 
 def parse_args():
     """Parse command line arguments"""
@@ -126,217 +130,41 @@ def apply_smoothing(profiles, bin_positions, method='savgol', window=21, polyord
     
     return smoothed_profiles
 
-#def plot_smoothed_tss_profiles(bin_positions, profiles, smoothed_profiles, output_file, 
-#                              window_size=3000, method='savgol', params=None, use_log2=False, use_abs=False):
-#    """
-#    Create a visualization with both original and smoothed profiles side by side.
-#    Saves the output file to the specified path.
-#    """
-#    # Get expression groups (excluding 'All')
-#    expression_groups = [g for g in profiles.keys() if g != 'All']
-#    expression_groups = sorted(expression_groups)
-#    
-#    # Create expression color map
-#    cmap = LinearSegmentedColormap.from_list(
-#        'expression_cmap',
-#        ['#952929', '#B25A31', '#BD8430', '#BDAA30', '#8ABD30', 
-#         '#30BD71', '#30BDBD', '#308ABD', '#3059BD', '#5930BD', '#8A30BD'],
-#        N=max(expression_groups) + 1
-#    )
-#    
-#    # Create figure with side-by-side panels for original and smoothed
-#    fig = plt.figure(figsize=(16, 8))
-#    gs = gridspec.GridSpec(2, 2, height_ratios=[3, 1], width_ratios=[1, 1])
-#    
-#    # Left panel: Original profiles
-#    ax1 = plt.subplot(gs[0, 0])
-#    
-#    # Plot each expression group
-#    for group in expression_groups:
-#        color_idx = group / max(expression_groups)
-#        ax1.plot(bin_positions, profiles[group], color=cmap(color_idx), linewidth=1, 
-#                 label=f"{group}")
-#    
-#    # Plot the "All" profile with thicker black line
-#    if 'All' in profiles:
-#        ax1.plot(bin_positions, profiles['All'], 'k-', linewidth=2, label="All")
-#    
-#    # Add vertical line at TSS
-#    ax1.axvline(x=0, color='gray', linestyle='--', alpha=0.7)
-#    
-#    # Add grid
-#    ax1.grid(True, alpha=0.3, linestyle='--')
-#    
-#    # Set axis limits and labels
-#    ax1.set_xlim(-window_size, window_size)
-#    
-#    # Set y-axis label based on transformations
-#    if use_log2 and use_abs:
-#        y_label = "log2(|Signal|)"
-#    elif use_log2:
-#        y_label = "log2(Signal)"
-#    elif use_abs:
-#        y_label = "|Signal|"
-#    else:
-#        y_label = "Average Profile"
-#    
-#    ax1.set_ylabel(y_label)
-#    ax1.set_title("Original Profiles")
-#    
-#    # Right panel: Smoothed profiles
-#    ax2 = plt.subplot(gs[0, 1], sharex=ax1, sharey=ax1)
-#    
-#    # Plot each expression group
-#    for group in expression_groups:
-#        color_idx = group / max(expression_groups)
-#        ax2.plot(bin_positions, smoothed_profiles[group], color=cmap(color_idx), linewidth=1.5, 
-#                 label=f"{group}")
-#    
-#    # Plot the "All" profile with thicker black line
-#    if 'All' in smoothed_profiles:
-#        ax2.plot(bin_positions, smoothed_profiles['All'], 'k-', linewidth=2.5, label="All")
-#    
-#    # Add vertical line at TSS
-#    ax2.axvline(x=0, color='gray', linestyle='--', alpha=0.7)
-#    
-#    # Add grid
-#    ax2.grid(True, alpha=0.3, linestyle='--')
-#    
-#    # Set smoothing method information
-#    if method == 'savgol':
-#        method_str = f"Savitzky-Golay (window={params['window']}, order={params['polyorder']})"
-#    elif method == 'gaussian':
-#        method_str = f"Gaussian (sigma={params['sigma']})"
-#    elif method == 'moving_avg':
-#        method_str = f"Moving Average (window={params['window']})"
-#    else:
-#        method_str = method
-#    
-#    ax2.set_title(f"Smoothed Profiles ({method_str})")
-#    
-#    # Set overall title based on transformations
-#    if use_log2 and use_abs:
-#        title_suffix = " (log2 of absolute values)"
-#    elif use_log2:
-#        title_suffix = " (log2 transformed)"
-#    elif use_abs:
-#        title_suffix = " (absolute values)"
-#    else:
-#        title_suffix = ""
-#    
-#    fig.suptitle(f"H1 Distribution Around TSS{title_suffix}", fontsize=16)
-#    
-#    # Bottom panels: Color legend
-#    ax3 = plt.subplot(gs[1, 0:2])
-#    
-#    # Create a horizontal colorbar for expression groups
-#    gradient = np.linspace(0, 1, 256)
-#    gradient = np.vstack((gradient, gradient))
-#    
-#    # Plot colorbar
-#    ax3.imshow(gradient, aspect='auto', cmap=cmap)
-#    
-#    # Configure legend axis
-#    ax3.set_yticks([])
-#    ax3.set_xticks(np.linspace(0, 255, len(expression_groups)))
-#    ax3.set_xticklabels(expression_groups)
-#    
-#    # Add "All" marker
-#    ax3.text(265, 0.5, "All", ha='left', va='center', fontweight='bold')
-#    ax3.plot([260], [0.5], 'ko', markersize=8)
-#    
-#    # Add labels for x-axis and colorbar
-#    ax1.set_xlabel("Relative Distance (bp)")
-#    ax2.set_xlabel("Relative Distance (bp)")
-#    ax3.set_xlabel("Gene expression")
-#    
-#    # Adjust layout
-#    plt.tight_layout()
-#    plt.subplots_adjust(top=0.9)
-#    
-#    # Save the figure
-#    plt.savefig(output_file, dpi=300, bbox_inches='tight')
-#    print(f"Combined figure saved to {output_file}")
-#    
-#    # CSV file path will be managed by the main function
-#    # Get the directory and use it for the CSV path
-#    output_dir = os.path.dirname(output_file)
-#    csv_file = os.path.join(output_dir, os.path.basename(output_file).replace('.png', '_data.csv'))
-#    data_for_csv = {'Position': bin_positions}
-#    
-#    # Add profiles to CSV data
-#    for group in expression_groups:
-#        data_for_csv[f'Original_Group_{group}'] = profiles[group]
-#        data_for_csv[f'Smoothed_Group_{group}'] = smoothed_profiles[group]
-#    
-#    if 'All' in profiles:
-#        data_for_csv['Original_Group_All'] = profiles['All']
-#        data_for_csv['Smoothed_Group_All'] = smoothed_profiles['All']
-#    
-#    pd.DataFrame(data_for_csv).to_csv(csv_file, index=False)
-#    print(f"Profile data saved to {csv_file}")
-
 def plot_smoothed_tss_profiles(bin_positions, profiles, smoothed_profiles, output_file, 
                               window_size=3000, method='savgol', params=None, use_log2=False, use_abs=False):
     """
     Create a visualization with both original and smoothed profiles side by side.
     Saves the output file to the specified path.
     """
+    plt.rcParams.update({
+    'font.size': 10,
+    'axes.titlesize': 12,
+    'axes.labelsize': 10,
+    'xtick.labelsize': 10,
+    'ytick.labelsize': 10,
+    'legend.fontsize': 8,
+    'figure.titlesize': 12,
+    'figure.figsize': (5.6, 3.8)
+    })
+    
     # Get expression groups (excluding 'All')
     expression_groups = [g for g in profiles.keys() if g != 'All']
     expression_groups = sorted(expression_groups)
     
-    # Define base colors
-    base_colors = [
-        '#952929', '#B25A31', '#BD8430', '#BDAA30', '#8ABD30', 
-        '#30BD71', '#30BDBD', '#308ABD', '#3059BD', '#5930BD', '#8A30BD'
-    ]
+    # Define colors for highly and lowly expressed enhancers
+    base_colors = ['orangered', 'gray']  # Highly expressed: orangered, Lowly expressed: gray
     
     # Get number of groups
     num_groups = len(expression_groups)
     
-    # Handle special case for 5 or fewer groups
-    if num_groups <= 5:
-        # Pick colors from different parts of the base_colors list for better contrast
-        if num_groups == 1:
-            selected_colors = [base_colors[5]]  # Mid-point color
-        elif num_groups == 2:
-            selected_colors = [base_colors[0], base_colors[10]]  # First and last
-        elif num_groups == 3:
-            selected_colors = [base_colors[0], base_colors[5], base_colors[10]]  # Beginning, middle, end
-        elif num_groups == 4:
-            selected_colors = [base_colors[0], base_colors[3], base_colors[7], base_colors[10]]  # Spread evenly
-        else:  # num_groups == 5
-            selected_colors = [base_colors[0], base_colors[2], base_colors[5], base_colors[8], base_colors[10]]  # Spread evenly
-        
-        # Create custom color map
-        cmap = LinearSegmentedColormap.from_list('expression_cmap', selected_colors, N=num_groups)
-        
-        # Create mapping between groups and colors
-        group_colors = {}
-        for i, group in enumerate(expression_groups):
-            group_colors[group] = cmap(i / max(1, num_groups - 1))
-    else:
-        # For more than 5 groups, use the standard gradient approach
-        cmap = LinearSegmentedColormap.from_list(
-            'expression_cmap',
-            base_colors,
-            N=max(expression_groups) + 1 if all(isinstance(g, int) for g in expression_groups) else num_groups
-        )
-        
-        # Create color mapping
-        group_colors = {}
-        if all(isinstance(g, int) for g in expression_groups):
-            # If groups are integers, use their values for color mapping
-            for group in expression_groups:
-                group_colors[group] = cmap(group / max(expression_groups))
-        else:
-            # If groups are strings or mixed, use their indices
-            for i, group in enumerate(expression_groups):
-                group_colors[group] = cmap(i / max(1, num_groups - 1))
+    # Create color mapping
+    group_colors = {}
+    for i, group in enumerate(expression_groups):
+        # Use orangered for highly expressed and gray for lowly expressed
+        group_colors[group] = base_colors[0] if i >= num_groups/2 else base_colors[1]
     
     # Create figure with side-by-side panels for original and smoothed
-    fig = plt.figure(figsize=(16, 8))
+    fig = plt.figure()
     gs = gridspec.GridSpec(2, 2, height_ratios=[3, 1], width_ratios=[1, 1])
     
     # Left panel: Original profiles
@@ -371,7 +199,7 @@ def plot_smoothed_tss_profiles(bin_positions, profiles, smoothed_profiles, outpu
         y_label = "Average Profile"
     
     ax1.set_ylabel(y_label)
-    ax1.set_title("Original Profiles")
+    ax1.set_title("Original Profile")
     
     # Right panel: Smoothed profiles
     ax2 = plt.subplot(gs[0, 1], sharex=ax1, sharey=ax1)
@@ -401,7 +229,7 @@ def plot_smoothed_tss_profiles(bin_positions, profiles, smoothed_profiles, outpu
     else:
         method_str = method
     
-    ax2.set_title(f"Smoothed Profiles ({method_str})")
+    ax2.set_title("H1.0 Distribution")
     
     # Set overall title based on transformations
     if use_log2 and use_abs:
@@ -413,7 +241,7 @@ def plot_smoothed_tss_profiles(bin_positions, profiles, smoothed_profiles, outpu
     else:
         title_suffix = ""
     
-    fig.suptitle(f"H1 Distribution Around TSS{title_suffix}", fontsize=16)
+    fig.suptitle(f"Distribution Around TSS{title_suffix}", fontsize=16)
     
     # Bottom panels: Color legend
     ax3 = plt.subplot(gs[1, 0:2])
@@ -423,19 +251,14 @@ def plot_smoothed_tss_profiles(bin_positions, profiles, smoothed_profiles, outpu
     gradient = np.vstack((gradient, gradient))
     
     # Plot colorbar with the appropriate colormap
-    ax3.imshow(gradient, aspect='auto', cmap=cmap)
+    ax3.imshow(gradient, aspect='auto', cmap=LinearSegmentedColormap.from_list('expression_cmap', base_colors, N=2))
     
     # Configure legend axis
     ax3.set_yticks([])
     
     # Set x-axis ticks to match expression groups
-    if num_groups <= 5:
-        # For 5 or fewer groups, place ticks evenly for better readability
-        ax3.set_xticks(np.linspace(0, 255, num_groups))
-    else:
-        # For more groups, keep original behavior
-        ax3.set_xticks(np.linspace(0, 255, len(expression_groups)))
-        
+    ax3.set_xticks(np.linspace(0, 255, num_groups))
+    
     ax3.set_xticklabels(expression_groups)
     
     # Add "All" marker
@@ -453,12 +276,15 @@ def plot_smoothed_tss_profiles(bin_positions, profiles, smoothed_profiles, outpu
     
     # Save the figure
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
-    print(f"Combined figure saved to {output_file}")
+    # Also save as SVG
+    svg_file = output_file.replace('.png', '.svg')
+    plt.savefig(svg_file, bbox_inches='tight')
+    print(f"Combined figure saved to {output_file} and {svg_file}")
     
     # CSV file path will be managed by the main function
     # Get the directory and use it for the CSV path
     output_dir = os.path.dirname(output_file)
-    csv_file = os.path.join(output_dir, os.path.basename(output_file).replace('.png', '_data.csv'))
+    csv_file = os.path.join(output_dir, os.path.basename(output_file).replace('.png', '_data.csv').replace('.svg', '_data.csv'))
     data_for_csv = {'Position': bin_positions}
     
     # Add profiles to CSV data
@@ -480,6 +306,17 @@ def plot_smoothed_kde(bin_positions, profiles, smoothed_profiles, output_file,
     This provides a density plot representation of the profile data.
     Saves the output file to the specified path.
     """
+    plt.rcParams.update({
+    'font.size': 10,
+    'axes.titlesize': 12,
+    'axes.labelsize': 10,
+    'xtick.labelsize': 10,
+    'ytick.labelsize': 10,
+    'legend.fontsize': 8,
+    'figure.titlesize': 12,
+    'figure.figsize': (5.6, 3.8)
+    })
+
     # Get expression groups (excluding 'All')
     expression_groups = [g for g in profiles.keys() if g != 'All']
     expression_groups = sorted(expression_groups)
@@ -487,57 +324,20 @@ def plot_smoothed_kde(bin_positions, profiles, smoothed_profiles, output_file,
     # Get number of groups
     num_groups = len(expression_groups)
     
-    # Define base colors
-    base_colors = [
-        '#952929', '#B25A31', '#BD8430', '#BDAA30', '#8ABD30', 
-        '#30BD71', '#30BDBD', '#308ABD', '#3059BD', '#5930BD', '#8A30BD'
-    ]
+    # Define colors for highly and lowly expressed enhancers
+    base_colors = ['orangered', 'gray']  # Highly expressed: orangered, Lowly expressed: gray
     
     # Create figure
-    plt.figure(figsize=(12, 8))
+    plt.figure()
     
     # Calculate appropriate alpha for overlapping contours
     alpha = max(0.1, min(0.7, 1.0 / len(expression_groups)))
     
-    # Handle special case for 5 or fewer groups
-    if num_groups <= 5:
-        # Pick colors from different parts of the base_colors list for better contrast
-        if num_groups == 1:
-            selected_colors = [base_colors[5]]  # Mid-point color
-        elif num_groups == 2:
-            selected_colors = [base_colors[0], base_colors[10]]  # First and last
-        elif num_groups == 3:
-            selected_colors = [base_colors[0], base_colors[5], base_colors[10]]  # Beginning, middle, end
-        elif num_groups == 4:
-            selected_colors = [base_colors[0], base_colors[3], base_colors[7], base_colors[10]]  # Spread evenly
-        else:  # num_groups == 5
-            selected_colors = [base_colors[0], base_colors[2], base_colors[5], base_colors[8], base_colors[10]]  # Spread evenly
-        
-        # Create custom color map
-        cmap = LinearSegmentedColormap.from_list('expression_cmap', selected_colors, N=num_groups)
-        
-        # Create mapping between groups and colors
-        group_colors = {}
-        for i, group in enumerate(expression_groups):
-            group_colors[group] = cmap(i / max(1, num_groups - 1))
-    else:
-        # For more than 5 groups, use the standard gradient approach
-        cmap = LinearSegmentedColormap.from_list(
-            'expression_cmap',
-            base_colors,
-            N=max(expression_groups) + 1 if all(isinstance(g, int) for g in expression_groups) else num_groups
-        )
-        
-        # Create color mapping
-        group_colors = {}
-        if all(isinstance(g, int) for g in expression_groups):
-            # If groups are integers, use their values for color mapping
-            for group in expression_groups:
-                group_colors[group] = cmap(group / max(expression_groups))
-        else:
-            # If groups are strings or mixed, use their indices
-            for i, group in enumerate(expression_groups):
-                group_colors[group] = cmap(i / max(1, num_groups - 1))
+    # Create color mapping
+    group_colors = {}
+    for i, group in enumerate(expression_groups):
+        # Use orangered for highly expressed and gray for lowly expressed
+        group_colors[group] = base_colors[0] if i >= num_groups/2 else base_colors[1]
     
     # Plot smoothed densities using the assigned colors
     for group in expression_groups:
@@ -598,95 +398,97 @@ def plot_smoothed_kde(bin_positions, profiles, smoothed_profiles, output_file,
     
     # Save the figure
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
-    print(f"Density plot saved to {output_file}")
+    # Also save as SVG
+    svg_file = output_file.replace('.png', '.svg')
+    plt.savefig(svg_file, bbox_inches='tight')
+    print(f"Density plot saved to {output_file} and {svg_file}")
 
+def plot_standalone_smoothed_profiles(bin_positions, smoothed_profiles, output_file, 
+                                    window_size=3000, method='savgol', params=None, use_log2=False, use_abs=False):
+    """
+    Create a standalone visualization of smoothed profiles without legends.
+    Uses plt.rcParams.update() for clean formatting.
+    """
+    # Set font sizes and figure size for standalone plot
+    plt.rcParams.update({
+        'font.size': 10,
+        'axes.titlesize': 12,
+        'axes.labelsize': 10,
+        'xtick.labelsize': 10,
+        'ytick.labelsize': 10,
+        'figure.figsize': (5.6, 3.8)
+    })
 
-#def plot_smoothed_kde(bin_positions, profiles, smoothed_profiles, output_file, 
-#                     window_size=3000, method='gaussian', use_log2=False, use_abs=False):
-#    """
-#    Create KDE-like visualization of H1 distribution around TSS.
-#    This provides a density plot representation of the profile data.
-#    Saves the output file to the specified path.
-#    """
-#    # Get expression groups (excluding 'All')
-#    expression_groups = [g for g in profiles.keys() if g != 'All']
-#    expression_groups = sorted(expression_groups)
-#    
-#    # Create figure
-#    plt.figure(figsize=(12, 8))
-#    
-#    # Calculate appropriate alpha for overlapping contours
-#    alpha = max(0.1, min(0.7, 1.0 / len(expression_groups)))
-#    
-#    # Create custom colormap for background density
-#    cmap = LinearSegmentedColormap.from_list(
-#        'expression_cmap',
-#        ['#952929', '#B25A31', '#BD8430', '#BDAA30', '#8ABD30', 
-#         '#30BD71', '#30BDBD', '#308ABD', '#3059BD', '#5930BD', '#8A30BD'],
-#        N=max(expression_groups) + 1
-#    )
-#    
-#    # Plot smoothed densities
-#    for group in expression_groups:
-#        # Normalize the profile to positive values for density representation
-#        profile = smoothed_profiles[group]
-#        color_idx = group / max(expression_groups)
-#        color = cmap(color_idx)
-#        
-#        # Create density-like representation
-#        plt.fill_between(bin_positions, 0, profile, 
-#                        color=color, alpha=alpha, label=f"Group {group}")
-#        
-#        # Add contour line
-#        plt.plot(bin_positions, profile, color=color, linewidth=1.5)
-#    
-#    # Plot the "All" profile with thicker black line
-#    if 'All' in smoothed_profiles:
-#        plt.plot(bin_positions, smoothed_profiles['All'], 'k-', linewidth=2.5, label="All")
-#    
-#    # Add vertical line at TSS
-#    plt.axvline(x=0, color='gray', linestyle='--', alpha=0.7)
-#    
-#    # Add grid
-#    plt.grid(True, alpha=0.3, linestyle='--')
-#    
-#    # Set axis limits
-#    plt.xlim(-window_size, window_size)
-#    
-#    # Set y-axis label based on transformations
-#    if use_log2 and use_abs:
-#        y_label = "Density of log2(|Signal|)"
-#    elif use_log2:
-#        y_label = "Density of log2(Signal)"
-#    elif use_abs:
-#        y_label = "Density of |Signal|"
-#    else:
-#        y_label = "Signal Density"
-#    
-#    plt.ylabel(y_label)
-#    plt.xlabel("Relative Distance (bp)")
-#    
-#    # Set title based on transformations
-#    if use_log2 and use_abs:
-#        title_suffix = " (log2 of absolute values)"
-#    elif use_log2:
-#        title_suffix = " (log2 transformed)"
-#    elif use_abs:
-#        title_suffix = " (absolute values)"
-#    else:
-#        title_suffix = ""
-#    
-#    plt.title(f"H1 Distribution Density Around TSS{title_suffix}")
-#    
-#    # Add legend
-#    plt.legend(title="Expression Groups", loc='upper right')
-#    
-#    # Adjust layout
-#    plt.tight_layout()
-#    
-#    # Save the figure
-#    plt.savefig(output_file, dpi=300, bbox_inches='tight')
-#    print(f"Density plot saved to {output_file}")
+    # Get expression groups (excluding 'All')
+    expression_groups = [g for g in smoothed_profiles.keys() if g != 'All']
+    expression_groups = sorted(expression_groups)
+    
+    # Define colors for highly and lowly expressed enhancers
+    base_colors = ['orangered', 'gray']  # Highly expressed: orangered, Lowly expressed: gray
+    
+    # Get number of groups
+    num_groups = len(expression_groups)
+    
+    # Create color mapping
+    group_colors = {}
+    for i, group in enumerate(expression_groups):
+        # Use orangered for highly expressed and gray for lowly expressed
+        group_colors[group] = base_colors[0] if i >= num_groups/2 else base_colors[1]
+    
+    # Create figure
+    plt.figure()
+    
+    # Plot each expression group using the assigned colors
+    for group in expression_groups:
+        plt.plot(bin_positions, smoothed_profiles[group], color=group_colors[group], linewidth=1.5)
+    
+    # Plot the "All" profile with thicker black line
+    if 'All' in smoothed_profiles:
+        plt.plot(bin_positions, smoothed_profiles['All'], 'k-', linewidth=2.5)
+    
+    # Add vertical line at TSS
+    plt.axvline(x=0, color='gray', linestyle='--', alpha=0.7)
+    
+    # Add grid
+    plt.grid(True, alpha=0.3, linestyle='--')
+    
+    # Set axis limits and labels
+    plt.xlim(-window_size, window_size)
+    
+    # Set y-axis label based on transformations
+    if use_log2 and use_abs:
+        y_label = "log2(|Signal|)"
+    elif use_log2:
+        y_label = "log2(Signal)"
+    elif use_abs:
+        y_label = "|Signal|"
+    else:
+        y_label = "Average Profile"
+    
+    plt.ylabel(y_label)
+    plt.xlabel("Relative Distance (bp)")
+    
+    # Set title based on transformations
+    if use_log2 and use_abs:
+        title_suffix = " (log2 of absolute values)"
+    elif use_log2:
+        title_suffix = " (log2 transformed)"
+    elif use_abs:
+        title_suffix = " (absolute values)"
+    else:
+        title_suffix = ""
+    
+    plt.title(f"H1 Distribution Around TSS{title_suffix}")
+    
+    # Adjust layout
+    plt.tight_layout()
+    
+    # Save the figure
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
+    # Also save as SVG
+    svg_file = output_file.replace('.png', '.svg')
+    plt.savefig(svg_file, bbox_inches='tight')
+    print(f"Standalone smoothed plot saved to {output_file} and {svg_file}")
 
 if __name__ == "__main__":
     # Parse command line arguments
@@ -726,6 +528,7 @@ if __name__ == "__main__":
     # Generate output file paths
     comparison_output = os.path.join(args.output_dir, f"{args.prefix}_comparison.png")
     density_output = os.path.join(args.output_dir, f"{args.prefix}_density.png")
+    standalone_output = os.path.join(args.output_dir, f"{args.prefix}_standalone.svg")
     csv_output = os.path.join(args.output_dir, f"{args.prefix}_profiles.csv")
     
     # Plot original vs smoothed profiles
@@ -743,5 +546,13 @@ if __name__ == "__main__":
             args.window, args.method, args.log2, args.abs
         )
     
+    # Plot standalone smoothed profiles (no legend)
+    print("Generating standalone smoothed plot...")
+    plot_standalone_smoothed_profiles(
+        bin_positions, smoothed_profiles, standalone_output,
+        args.window, args.method, smoothing_params, args.log2, args.abs
+    )
+    
     print(f"Outputs saved to directory: {args.output_dir}")
     print("Smoothing and visualization complete.")
+
